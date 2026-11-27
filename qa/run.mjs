@@ -18,7 +18,7 @@ const check = (name, ok, detail = "") => results.push({ name, ok: !!ok, detail: 
 const firstClose = async (q) => { if (await q.locator("#howto[open]").count()) await q.click("#howto-ok"); if (await q.evaluate(() => !!(window.Core && Core.coach && Core.coach.active()))) { await q.evaluate(() => { Core.coach.leave(); scrollTo(0, 0); }); await q.waitForTimeout(100); } }; // はじめての練習の吹き出しをやめてホームへ（sync-template の migrateFirstQa が足した）
 const G = createRequire(import.meta.url)(path.join(root, "data.js"));
 
-const PINS = "tsuyoi:0:2.3:x.x.x,pspeed:1:2.3:7.100.340,chikai20:20.7.1:11.2.x.5,naka:20.28.2:2.9.6.x,fukai:50.60.0:8.11.20.x,hakai:1:1.3.0:1.10.100.1,kabe:10.14.0:14.x.11.3,shinpatsu:2:3.2.1:x.x.x.1;tooi:10.140.2:35.30.x,sspeed:0:4.2:30.340.4,kenchi:1:1.0.3:x.x.x.x,mijikai:0:4.2.0:x.10.x.x,kabe30:30.23.1:5.x.9.1,shinpatsu:2:3.1.2:x.x.1.x,kabe:10.14.0:11.3.x.8,toi:0:0.3.1:x.x.x.x;tooi:10.55.0:14.9.x,sspeed:2:3.0:7.4.40,mijikai:1:0.2.1:1.x.x.x,fuka30:30.28.2:x.6.2.10,gosa:2:0.1.3:1.x.5.2,kabe30:30.7.2:x.3.8.14,fukai:80.25.0:x.2.6.10,kabe:20.28.1:2.6.x.9"; // 過去の日の問題の印（変わったら過去の日の問題が変わった印。種類・言い方は足すだけでも変わる）
+const PINS = "tsuyoi:0:2.3:x.x.x,pspeed:1:2.3:7.100.340,chikai20:20.7.1:11.2.x.5,naka:20.28.2:2.9.6.x,fukai:50.60.0:8.11.20.x,hakai:1:1.3.0:1.10.100.1,kabe:10.14.0:14.x.11.3,shinpatsu:2:3.2.1:x.x.x.1;tooi:10.140.2:35.30.x,sspeed:0:4.2:30.340.4,kenchi:1:1.0.3:x.x.x.x,mijikai:0:4.2.0:1.10.x.x,kabe30:30.23.1:5.x.9.1,shinpatsu:2:3.1.2:x.x.1.x,kabe:10.14.0:11.3.x.8,toi:0:0.3.1:x.x.x.x;tooi:10.55.0:14.9.x,sspeed:2:3.0:7.4.40,mijikai:1:0.2.1:1.1.x.x,fuka30:30.28.2:x.6.2.10,gosa:2:0.1.3:1.x.5.2,kabe30:30.7.2:x.3.8.14,fukai:80.25.0:x.2.6.10,kabe:20.28.1:2.6.x.9"; // 過去の日の問題の印（変わったら過去の日の問題が変わった印。種類・言い方は足すだけでも変わる）
 // ---- 1. 問題の作り方（ブラウザを使わない）----
 // 目安の計算（ゲームとは別に書いた式。data.js の答えがこれと合うかを見る）
 // 出典：気象庁「緊急地震速報の仕組み」https://www.jma.go.jp/jma/kishou/know/jishin/eew/shikumi/shikumi.html（P波 秒速約7km・S波 秒速約4km・解析や伝達に数秒程度）
@@ -30,7 +30,7 @@ const wallOf = (h) => { let w = 0; for (let d = 0; d <= 60; d += 0.01) if (yoyu(
 const WALL = (h) => { const w = wallOf(h); return w === 0 ? "none" : Math.abs(w - 20) <= 2.5 ? "w20" : Math.abs(w - 15) <= 2.5 ? "w15" : "?"; };
 const SCENE = ["tooi", "chikai", "naka", "fuka30", "haruka", "chikai20", "kabe", "fukai", "kabe30"];
 // 決まりの問題の答え（気象庁「緊急地震速報の仕組み」「緊急地震速報の特性や限界」）
-const FACT = { pspeed: "秒速約7km", sspeed: "秒速約4km", tsuyoi: "S波（あとから届く波）", kaiseki: "数秒程度", genri: "震源に近い場所", mijikai: "数秒から長くても数十秒程度", kenchi: "震源付近の地震計がとらえたP波", shinpatsu: "真上より離れた所で揺れが大きくなる", gosa: "±1階級程度", hakai: "約100秒", toi: "震源や規模の推定の誤差が大きくなりうる" };
+const FACT = { pspeed: "秒速約7km", sspeed: "秒速約4km", tsuyoi: "S波（あとから届く波）", kaiseki: "数秒程度", genri: "震源に近い場所", mijikai: "数秒から長くても数十秒程度", kenchi: "震源付近の地震計がとらえたP波", shinpatsu: "真上より離れた所で揺れが大きくなる", gosa: "±1階級程度", hakai: "約100秒", toi: "推定の誤差が大きくなりうる" };
 {
   const bad = {}, seen = {}, N = 3000;
   for (const k of G.KINDS) {
