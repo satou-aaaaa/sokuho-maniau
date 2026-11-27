@@ -196,11 +196,12 @@ html.a11y-cvd .ch.ng{border-width:3px}
 .more{font-size:.85rem;line-height:1.7;text-align:left}.more summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:700;color:var(--ai2)}
 .xp{display:flex;flex-direction:column;gap:10px}
 .x-res{margin:0;text-align:center;font-weight:900;font-size:1.15rem;padding:.5rem;border-radius:12px;border:2px solid var(--ok);background:var(--paper)}
-.x-res.bad{border-color:var(--shu);border-style:dashed}
+.x-res.bad{border-color:var(--shu);border-style:dashed}.x-res.near{border-color:var(--gold);border-style:dotted}
+.tl-near{fill:var(--gold);opacity:.4}
 .x-cross{border:2px solid var(--line);border-radius:12px;overflow:hidden}
 .x-lab{font-weight:700;font-size:.95rem;display:flex;justify-content:space-between;gap:8px}
 .x-range{width:100%;min-height:44px;accent-color:var(--shu)}
-.x-dep{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.x-dep{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
 .x-dep button{all:unset;box-sizing:border-box;cursor:pointer;min-height:48px;display:grid;place-items:center;border-radius:10px;border:2px solid var(--line);background:var(--paper);font-weight:800;color:var(--ink)}
 .x-dep button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
 [hidden]{display:none!important}
@@ -1551,7 +1552,7 @@ const starStr = (s) => `<span class="stars" role="img" aria-label="星${s}つ">$
 const fresh = () => ({ v: 1, days: {}, hdays: {}, adays: {}, dex: {}, runs: {}, tut: false, kofi: {}, ach: {}, ebest: 0 });
 let MODE = "d";
 let mem = null; // 保存できない環境では、開いているあいだだけここに置く
-const doneOf = (r) => !!r && r.mode !== "e" && r.res.length >= r.list.length, recOf = (r) => ({ m: r.res.map((x) => x.m), k: r.list.map((t) => t.split("|")[0]) });
+const doneOf = (r) => !!r && r.mode !== "e" && Array.isArray(r.res) && Array.isArray(r.list) && r.res.length >= r.list.length, recOf = (r) => ({ m: r.res.map((x) => x.m), k: r.list.map((t) => t.split("|")[0]) });
 const runKey = (mode, date) => (mode === "a" ? "a:" + date : mode);
 const bookOf = (s, m) => (m === "d" ? s.days : m === "h" ? s.hdays : m === "a" ? s.adays : null);
 // 終わった回を日ごとの記録に入れる（結果を見る前に閉じても、別のタブが次の日を保存しても、終えた日を失わない）
@@ -2037,7 +2038,7 @@ function about() {
       <h3>緊急地震速報の「間に合う・間に合わない」を知る練習のゲーム</h3>
       <p>P波・S波の速さと、速報の解析や伝達にかかる時間は、気象庁「緊急地震速報の仕組み」「緊急地震速報の特性や限界」によります。秒の計算は目安です。問題の地震は練習のための例で、本物の地震の記録ではありません。</p>
       <h3>計算の目安</h3>
-      <p>震源から町までの直線の距離 ＝ √（距離² ＋ 深さ²）。強いゆれ（S波・秒速約4km）は「直線の距離 ÷ 4」秒後に届きます。速報は、震源の真上の地震計にP波（秒速約7km）が届く「深さ ÷ 7」秒後に、解析と伝達の4秒（気象庁の「数秒程度」を4秒と置いた）を足した時刻に届くとしました。余裕 ＝ ゆれの時刻 − 速報の時刻。1秒より小さいときは「間に合わない」とします。</p>
+      <p>震源から町までの直線の距離 ＝ √（距離² ＋ 深さ²）。強いゆれ（S波・秒速約4km）は「直線の距離 ÷ 4」秒後に届きます。速報は、震源の真上の地震計にP波（秒速約7km）が届く「深さ ÷ 7」秒後に、解析と伝達の4秒（気象庁の「数秒程度」を4秒と置いた）を足した時刻に届くとしました。余裕 ＝ ゆれの時刻 − 速報の時刻。0秒以下なら「間に合わない」。「壁」は余裕が0秒になる距離です。0〜1秒は身を守る時間がほぼ無い「ぎりぎり」なので、問題には出さず、答えの選び肢では1秒より小さい余裕を「間に合わない」とまとめます（「ためす」では △ ぎりぎり と出ます）。</p>
       <p>本物の速報は、観測点の場所・地震の大きさ・解析の回数でちがい、地震の発生から数十秒かかることもあります。気象庁は、速報で具体的な猶予時間は発表しません。速報を見聞きしたら、秒を数えるより先に、まず身を守ってください。</p>
       <h3>答えの出どころ</h3>
       <ul>
@@ -2080,34 +2081,34 @@ function timeSvg(d, h, anim) {
   const c = G.calc(d, h), tp = c.R / G.VP, td = h / G.VP, end = Math.max(c.s, c.a, 6), T = Math.ceil((end + 2) / 5) * 5;
   const L = 62, Wd = 300, k = (Wd - L - 34) / T, X = (t) => L + t * k, dur = (t) => (anim ? (2.4 * t / T).toFixed(2) : 0);
   const row = (y, t, cls, label, extra = "") => `<text x="${L - 6}" y="${y + 5}" text-anchor="end" class="tl-t">${label}</text><line x1="${L}" y1="${y}" x2="${X(t)}" y2="${y}" class="tl-b ${cls}${anim ? " grow" : ""}" style="animation-duration:${dur(t)}s"/>${extra}<text x="${X(t) + 3}" y="${y + 4}" class="tl-t tl-n">${f1(t)}</text>`;
-  const ok = c.y >= 1, gx1 = X(Math.min(c.a, c.s)), gx2 = X(Math.max(c.a, c.s)), gy = 112, ax = 150;
+  const ok = c.y >= 1, near = c.y > 0 && !ok, gx1 = X(Math.min(c.a, c.s)), gx2 = X(Math.max(c.a, c.s)), gy = 112, ax = 150;
   const ticks = []; for (let t = 0; t <= T; t += T > 30 ? 10 : 5) ticks.push(`<line x1="${X(t)}" y1="14" x2="${X(t)}" y2="${ax - 8}" class="tl-g"/><text x="${X(t)}" y="${ax + 4}" text-anchor="middle" class="tl-t tl-s">${t}</text>`);
-  return `<svg viewBox="0 0 ${Wd} ${ax + 20}" role="img" aria-label="町に届く時刻：P波${f1(tp)}秒、速報${f1(c.a)}秒、強いゆれ${f1(c.s)}秒。${ok ? `余裕は${G.lab(c.y)}` : "速報は間に合わない"}（目安）">
+  return `<svg viewBox="0 0 ${Wd} ${ax + 20}" role="img" aria-label="町に届く時刻：P波${f1(tp)}秒、速報${f1(c.a)}秒、強いゆれ${f1(c.s)}秒。${ok ? `余裕は${G.lab(c.y)}` : c.y > 0 ? "速報が1秒未満だけ先（ぎりぎり）" : "速報は間に合わない"}（目安）">
     ${ticks.join("")}<text x="${Wd - 2}" y="${ax + 17}" text-anchor="end" class="tl-t tl-s">地震の発生からの秒（目安）</text>
     ${row(26, tp, "tl-p", "P波")}
     ${row(54, c.a, "tl-a", "速報", `<line x1="${L}" y1="54" x2="${X(td)}" y2="54" class="tl-a0${anim ? " grow" : ""}" style="animation-duration:${dur(td)}s"/>`)}
     ${row(82, c.s, "tl-s1", "強いゆれ")}
     <g class="${anim ? "late" : ""}" style="animation-delay:${anim ? (2.4 * Math.max(c.a, c.s) / T).toFixed(2) : 0}s">
       <line x1="${X(c.a)}" y1="48" x2="${X(c.a)}" y2="${gy + 4}" class="tl-mk"/><line x1="${X(c.s)}" y1="76" x2="${X(c.s)}" y2="${gy + 4}" class="tl-mk"/>
-      <rect x="${gx1}" y="${gy - 6}" width="${Math.max(2, gx2 - gx1)}" height="12" class="${ok ? "tl-ok" : "tl-ng"}"/>
-      <text x="${Math.min(Math.max((gx1 + gx2) / 2, L + 50), Wd - 60)}" y="${gy + 22}" text-anchor="middle" class="tl-t tl-gap">${ok ? `速報が先：余裕 ${G.lab(c.y)}` : `✕ 間に合わない（ゆれが先）`}</text>
+      <rect x="${gx1}" y="${gy - 6}" width="${Math.max(2, gx2 - gx1)}" height="12" class="${ok ? "tl-ok" : near ? "tl-near" : "tl-ng"}"/>
+      <text x="${Math.min(Math.max((gx1 + gx2) / 2, L + 50), Wd - 60)}" y="${gy + 22}" text-anchor="middle" class="tl-t tl-gap">${ok ? `速報が先：余裕 ${G.lab(c.y)}` : c.y > 0 ? `△ ぎりぎり：速報が${f1(c.y)}秒先` : `✕ 間に合わない（ゆれが先）`}</text>
     </g>
   </svg>`;
 }
 function calcText(d, h) {
   const c = G.calc(d, h);
-  return `直線の距離 √(${d}²＋${h}²) ≈ ${f1(c.R)}km。強いゆれ（S波）${f1(c.R)}÷4 ≈ ${f1(c.s)}秒後。速報 ${h}÷7＋4 ≈ ${f1(c.a)}秒後。差は ${f1(c.y)}秒 → ${c.y >= 1 ? "余裕" + G.lab(c.y) : "間に合わない"}（1秒より小さければ間に合わないとした）。どれも目安です。`;
+  return `直線の距離 √(${d}²＋${h}²) ≈ ${f1(c.R)}km。強いゆれ（S波）${f1(c.R)}÷4 ≈ ${f1(c.s)}秒後。速報 ${h}÷7＋4 ≈ ${f1(c.a)}秒後。差は ${f1(c.y)}秒 → ${c.y >= 1 ? "余裕" + G.lab(c.y) : c.y > 0 ? "ぎりぎり（1秒未満）" : "間に合わない"}。どれも目安です。`;
 }
 // ためす：距離と深さを動かして、壁をさがす（記録には入れない）。el に描く。inline は答えのあとの中に出すとき
-const XDEP = [10, 20, 30, 50, 80, 100];
+const XDEP = [10, 20, 30, 50, 60, 80, 100]; // 問題に出る深さを全部（答えのあとに開いても、その地震のまま）
 function mountExplore(el, d, h) {
-  d = Math.min(Math.max(0, d), 100);
+  d = Math.min(Math.max(0, d), 200);
   const draw = () => {
     const c = G.calc(d, h), wl = G.wall(h), ok = c.y >= 1;
-    el.querySelector(".x-res").innerHTML = `${ok ? `✓ 速報が先：余裕 <b>${G.lab(c.y)}</b>` : `✕ <b>間に合わない</b>：ゆれが先（${c.y > -0.05 ? "ほぼ同時" : `${f1(-c.y)}秒先`}）`}`;
-    el.querySelector(".x-res").className = "x-res " + (ok ? "good" : "bad");
+    el.querySelector(".x-res").innerHTML = ok ? `✓ 速報が先：余裕 <b>${G.lab(c.y)}</b>` : c.y > 0 ? `△ <b>ぎりぎり</b>：速報が${f1(c.y)}秒先（身を守る時間はほぼ無い）` : `✕ <b>間に合わない</b>：ゆれが先（${c.y > -0.05 ? "ほぼ同時" : `${f1(-c.y)}秒先`}）`;
+    el.querySelector(".x-res").className = "x-res " + (ok ? "good" : c.y > 0 ? "near" : "bad");
     el.querySelector(".x-wall").textContent = wl > 0 ? `深さ${h}kmの壁：震源の真上から約${Math.round(wl)}km（目安）` : `深さ${h}kmでは壁なし：真上の町でも間に合う（目安）`;
-    el.querySelector(".x-cross").innerHTML = crossSvg(d, h, true, 100);
+    el.querySelector(".x-cross").innerHTML = crossSvg(d, h, true, d > 100 ? 200 : 100);
     el.querySelector(".x-tl").innerHTML = timeSvg(d, h, false);
     el.querySelector(".x-dv").textContent = `${d}km`;
     el.querySelectorAll(".x-dep button").forEach((b) => b.setAttribute("aria-pressed", String(+b.dataset.h === h)));
@@ -2115,11 +2116,11 @@ function mountExplore(el, d, h) {
   el.innerHTML = `<p class="x-res" role="status" aria-live="polite"></p>
     <div class="x-cross"></div>
     <label class="x-lab" for="xd-${el.id}">町までの距離（震源の真上から）<b class="x-dv"></b></label>
-    <input type="range" id="xd-${el.id}" min="0" max="100" step="1" value="${Math.min(d, 100)}" class="x-range">
+    <input type="range" id="xd-${el.id}" min="0" max="200" step="1" value="${d}" class="x-range">
     <div class="x-dep" role="group" aria-label="震源の深さ">${XDEP.map((v) => `<button type="button" data-h="${v}">${v}km</button>`).join("")}</div>
     <p class="x-wall note"></p>
     <div class="x-tl tl"></div>`;
-  if (!XDEP.includes(h)) h = 10;
+  if (!XDEP.includes(h)) h = XDEP.reduce((a, b) => (Math.abs(b - h) < Math.abs(a - h) ? b : a));
   el.querySelector(".x-range").oninput = (e) => { d = +e.target.value; draw(); };
   el.querySelectorAll(".x-dep button").forEach((b) => (b.onclick = () => { h = +b.dataset.h; draw(); }));
   draw();

@@ -18,7 +18,7 @@ const check = (name, ok, detail = "") => results.push({ name, ok: !!ok, detail: 
 const firstClose = async (q) => { if (await q.locator("#howto[open]").count()) await q.click("#howto-ok"); if (await q.evaluate(() => !!(window.Core && Core.coach && Core.coach.active()))) { await q.evaluate(() => { Core.coach.leave(); scrollTo(0, 0); }); await q.waitForTimeout(100); } }; // はじめての練習の吹き出しをやめてホームへ（sync-template の migrateFirstQa が足した）
 const G = createRequire(import.meta.url)(path.join(root, "data.js"));
 
-const PINS = "tsuyoi:0:2.3:x.x.x,pspeed:1:2.3:7.100.340,chikai20:20.7.1:11.2.x.5,naka:20.28.2:2.9.6.x,fukai:50.60.0:8.11.20.x,hakai:1:1.3.0:1.10.100.1,kabe:10.14.0:14.x.11.3,shinpatsu:2:3.2.1:x.x.x.1;tooi:10.140.2:35.30.x,sspeed:0:4.2:30.340.4,kenchi:1:1.0.3:x.x.x.x,mijikai:0:4.2.0:1.10.x.x,kabe30:30.23.1:5.x.9.1,shinpatsu:2:3.1.2:x.x.1.x,kabe:10.14.0:11.3.x.8,toi:0:0.3.1:x.x.x.x;tooi:10.55.0:14.9.x,sspeed:2:3.0:7.4.40,mijikai:1:0.2.1:1.1.x.x,fuka30:30.28.2:x.6.2.10,gosa:2:0.1.3:1.x.5.2,kabe30:30.7.2:x.3.8.14,fukai:80.25.0:x.2.6.10,kabe:20.28.1:2.6.x.9"; // 過去の日の問題の印（変わったら過去の日の問題が変わった印。種類・言い方は足すだけでも変わる）
+const PINS = "tsuyoi:0:2.3:S波（あとから届く波）/音の波/光の波,pspeed:1:2.3:秒速約7km/秒速約100km/秒速約340m,chikai20:20.7.1:約11秒/約2秒/間に合わない/約5秒,naka:20.28.2:約2秒/約9秒/約6秒/間に合わない,fukai:50.60.0:約8秒/約11秒/約20秒/間に合わない,hakai:1:1.3.0:約1時間/約10秒/約100秒/約1秒,kabe:10.14.0:約14秒/間に合わない/約11秒/約3秒,shinpatsu:2:3.2.1:P波がS波よりおそくなる/真上より離れた所で揺れが大きくなる/真上だけが揺れる/速報がいつも1分前に届く;tooi:10.140.2:約35秒/約30秒/間に合わない,sspeed:0:4.2:秒速約30万km/秒速約340m/秒速約4km,kenchi:1:1.0.3:沖で測った津波の高さ/遠くの町の地震計に届いたS波/震源付近の地震計がとらえたP波/テレビに映った町の様子,mijikai:0:4.2.0:半日から長くても1日程度/いつも10分以上の余裕がある/数分から長くても数十分程度/数秒から長くても数十秒程度,kabe30:30.23.1:約5秒/間に合わない/約9秒/約1秒,shinpatsu:2:3.1.2:P波がS波よりおそくなる/真上より離れた所で揺れが大きくなる/速報がいつも1分前に届く/真上だけが揺れる,kabe:10.14.0:約11秒/約3秒/間に合わない/約8秒,toi:0:0.3.1:推定の誤差が大きくなりうる/推定の誤差がまったく無くなる/どの町でも揺れが必ず小さくなる/速報がいつもより早く届く;tooi:10.55.0:約14秒/約9秒/間に合わない,sspeed:2:3.0:秒速約7km/秒速約4km/秒速約40km,mijikai:1:0.2.1:1時間から長くても数時間程度/半日から長くても1日程度/数秒から長くても数十秒程度/数分から長くても数十分程度,fuka30:30.28.2:間に合わない/約6秒/約2秒/約10秒,gosa:2:0.1.3:±1階級程度/誤差は無い/±5階級程度/いつも2階級大きい,kabe30:30.7.2:間に合わない/約3秒/約8秒/約14秒,fukai:80.25.0:間に合わない/約2秒/約6秒/約10秒,kabe:20.28.1:約2秒/約6秒/間に合わない/約9秒"; // 過去の日の問題の印（変わったら過去の日の問題が変わった印。種類・言い方は足すだけでも変わる）
 // ---- 1. 問題の作り方（ブラウザを使わない）----
 // 目安の計算（ゲームとは別に書いた式。data.js の答えがこれと合うかを見る）
 // 出典：気象庁「緊急地震速報の仕組み」https://www.jma.go.jp/jma/kishou/know/jishin/eew/shikumi/shikumi.html（P波 秒速約7km・S波 秒速約4km・解析や伝達に数秒程度）
@@ -95,7 +95,7 @@ const FACT = { pspeed: "秒速約7km", sspeed: "秒速約4km", tsuyoi: "S波（�
   check("2か月のうちに20種類が全部出る・前の日と同じ組の日が少ない", cover.size === 20 && sameAsPrev < 20, `${cover.size}種類・前の日と同じ ${sameAsPrev}日`);
   // 過去の日の問題が変わらない（data.js を直したときの見張り。値は 2026-11-27 に作ったもの）
   // 1問目だけでなく、いくつかの日の5問と上級3問の全部（種類と言い方・選び肢の印）を見る（種類や言い方を足すと、全部の日の問題が変わるため。shigaisen-yomi #1 の CodeRabbit）
-  const snap = ["2026-11-27", "2026-11-28", "2027-01-01"].map((d) => [...G.dailyTags(d), ...G.hardTags(d)].map((t) => { const P = G.make(t); return `${P.kind}:${P.v}:${P.opts.map((o) => o.replace(/[^\d]/g, "") || "x").join(".")}`; }).join(",")).join(";");
+  const snap = ["2026-11-27", "2026-11-28", "2027-01-01"].map((d) => [...G.dailyTags(d), ...G.hardTags(d)].map((t) => { const P = G.make(t); return `${P.kind}:${P.v}:${P.opts.join("/")}`; }).join(",")).join(";");
   check("過去の日（2026-11-27・11-28・2027-01-01）の5問と上級3問が作ったときのまま（種類・言い方を足す・並べ替える・消すと変わる）", snap === PINS, snap);
 }
 
@@ -481,7 +481,7 @@ try {
     const before = await q.evaluate(() => localStorage.getItem("skh-v1"));
     await q.click("#go-x"); await q.waitForTimeout(100);
     const setD = (d) => q.evaluate((d) => { const r = document.querySelector(".x-range"); r.value = String(d); r.dispatchEvent(new Event("input", { bubbles: true })); }, d);
-    check("ためす：距離のつまみ（0〜100km）と深さのボタン6つ（48px以上）がある", await q.locator(".x-range").count() === 1 && await q.getAttribute(".x-range", "max") === "100" && await q.locator(".x-dep button").count() === 6 && (await q.$$eval(".x-dep button", (b) => b.every((x) => Math.round(x.getBoundingClientRect().height) >= 44))));
+    check("ためす：距離のつまみ（0〜200km）と深さのボタン7つ（問題に出る深さ全部・48px以上）がある", await q.locator(".x-range").count() === 1 && await q.getAttribute(".x-range", "max") === "200" && await q.locator(".x-dep button").count() === 7 && (await q.$$eval(".x-dep button", (b) => b.every((x) => Math.round(x.getBoundingClientRect().height) >= 44))));
     await setD(10); const r10 = await q.textContent(".x-res");
     await setD(40); const r40 = await q.textContent(".x-res");
     const w10 = await q.textContent(".x-wall");
@@ -496,7 +496,13 @@ try {
     const tl = await q.getAttribute("#tl svg", "aria-label");
     check("答えのあとに P波・速報・強いゆれの線が伸びる図（届く秒の読み上げ付き）と「くわしく」の式", !!tl && /P波.*速報.*強いゆれ/.test(tl) && await q.locator("#tl .grow").count() >= 3 && (await q.textContent(".verdict .more")).includes("÷7"), tl);
     await q.click("#go-x2"); await q.waitForTimeout(100);
-    check("答えのあとの「距離を動かしてみる」で、その地震のまま距離を動かせる", await q.locator("#xbox:not([hidden]) .x-range").count() === 1 && +(await q.inputValue("#xbox .x-range")) === await q.evaluate(() => Math.min(__nm.cur().P.sim.d, 100)));
+    check("答えのあとの「距離を動かしてみる」で、その地震のまま（距離も深さも同じ）動かせる", await q.locator("#xbox:not([hidden]) .x-range").count() === 1 && +(await q.inputValue("#xbox .x-range")) === await q.evaluate(() => __nm.cur().P.sim.d) && +(await q.getAttribute('#xbox .x-dep button[aria-pressed="true"]', "data-h")) === await q.evaluate(() => __nm.cur().P.sim.h));
+    { // 問題に出る深さと距離（いちばん遠い 200km・深さ60km）でも、そのまま開ける（sokuho-maniau #1 の CodeRabbit）
+      await q.evaluate(() => __nm.explore(200, 60)); await q.waitForTimeout(50);
+      check("ためす：問題に出る いちばん遠い200km・深さ60kmもそのまま開ける", +(await q.inputValue(".x-range")) === 200 && await q.getAttribute('.x-dep button[aria-pressed="true"]', "data-h") === "60");
+      // 余裕が0〜1秒（深さ10km・22km で約0.6秒）は、速報が先だがぎりぎり。ゆれが先とは言わない（sokuho-maniau #1 の CodeRabbit）
+      await q.evaluate(() => __nm.explore(22, 10)); await q.waitForTimeout(50);
+      check("ためす：余裕0〜1秒は「ぎりぎり：速報が先」と出す（到着の順を逆に言わない）", (await q.textContent(".x-res")).includes("ぎりぎり") && !(await q.textContent(".x-res")).includes("ゆれが先") && /ぎりぎり/.test(await q.getAttribute(".x-tl svg", "aria-label"))); }
     await q.context().close();
   }
   // スマホ幅・とても大きい文字でもはみ出さない・押す所は44px以上
